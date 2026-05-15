@@ -1,0 +1,11 @@
+RewriteEngine On
+
+# khong cho xem cau truc thu muc
+Options -Indexes
+
+# dam bao rang yeu cau khong phai la mot tep hoac thu muc
+RewriteCond %(REQUEST_FILENAME) !-f
+RewriteCond %(REQUEST_FILENAME) !-d
+
+# dieu huong tat ca yeu cau toi index.php
+RewriteRule ^(.*)$ index.php?url=$1
