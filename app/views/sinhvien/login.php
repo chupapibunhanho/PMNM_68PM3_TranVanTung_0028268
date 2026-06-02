@@ -1,18 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1> Login </h1>
-    <form action="" method="POST">
-        <Label>UserName: </Label>
-        <input type="text" name="username" placeholder="userName"> <br>
-        <Label>Password: </Label>
-        <input type="password" name="password" placeholder="password"> <br>
+<?php $data['title'] = 'Dang nhap'; ?>
+
+<h1>Login</h1>
+
+<form action="" method="POST">
+    <div class="form-group">
+        <label for="username">UserName:</label>
+        <input type="text" id="username" name="username" placeholder="userName">
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="password">
+    </div>
+
+    <div class="actions">
         <button type="submit">Login</button>
-    </form>
-</body>
-</html>
+    </div>
+</form>

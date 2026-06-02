@@ -21,7 +21,9 @@ class auth {
             }
         }
 
-        require_once '../app/views/sinhvien/login.php';
+        Controller::renderView('sinhvien/login', [
+            'title' => 'Dang nhap',
+        ]);
     }
 
     public function logout()

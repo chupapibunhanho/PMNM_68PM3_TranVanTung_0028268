@@ -9,6 +9,15 @@ class Controller
 
     public function view($view, $data = [])
     {
-        require_once '../app/views/' . $view . '.php';
+        self::renderView($view, $data);
+    }
+
+    public static function renderView($view, $data = [])
+    {
+        ob_start();
+        require '../app/views/' . $view . '.php';
+        $content = ob_get_clean();
+
+        require '../app/views/sinhvien/layout/materlayout.php';
     }
 }

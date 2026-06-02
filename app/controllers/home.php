@@ -7,15 +7,22 @@ class home
     {
         $model = new sinhvienModel();
         $danhSachSinhVien = $model->getAllSinhVien();
-        require_once '../app/views/sinhvien/home/index.php';
+        Controller::renderView('sinhvien/home/index', [
+            'title' => 'Danh sach sinh vien',
+            'danhSachSinhVien' => $danhSachSinhVien,
+        ]);
     }
     
     public function about(){
-        echo "day la trang gioi thieu";
+        Controller::renderView('sinhvien/about', [
+            'title' => 'Gioi thieu',
+        ]);
     }
     
     public function login(){
-        require_once __DIR__ . '/../views/sinhvien/home/login.php';
+        Controller::renderView('sinhvien/login', [
+            'title' => 'Dang nhap',
+        ]);
     }
 
 }
