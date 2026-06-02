@@ -7,11 +7,11 @@
 </head>
 <body>
     <h1> Login </h1>
-    <form action="../sinhvien/index.php" method="POST">
+    <form action="" method="POST">
         <Label>UserName: </Label>
         <input type="text" name="username" placeholder="userName"> <br>
         <Label>Password: </Label>
-        <input type="text" name="password" placeholder="password"> <br>
+        <input type="password" name="password" placeholder="password"> <br>
         <button type="submit">Login</button>
     </form>
 </body>

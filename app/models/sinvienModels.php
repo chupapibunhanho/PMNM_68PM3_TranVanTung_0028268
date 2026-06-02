@@ -1,5 +1,5 @@
 <?php
-require_once '../app/core/connectDB.php';
+require_once '../app/core/DB.php';
 
 class sinhvienModel {
     private $conn;
