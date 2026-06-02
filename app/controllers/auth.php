@@ -8,19 +8,19 @@ class auth {
 
     public function login() {
         if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-            
             $username = $_POST['username'] ?? '';
             $password = $_POST['password'] ?? '';
             
             if(isset($this->user[$username]) && $this->user[$username] == $password) {
                 $_SESSION['username'] = $username;
-                header("Location: /QLSV/public/home/index");
+                header("Location: ../sinhvien/index");
                 exit();
             } else {
-                header('Location: /QLSV/public/home/login');
+                header('Location: login');
                 exit();
             }
         }
+
+        require_once '../app/views/sinhvien/login.php';
     }
 }
-?>

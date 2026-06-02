@@ -6,5 +6,5 @@
     <title>danh sách sinh viên</title>
 </head>
 <body>
-    <h1>con cho beo</h1>
+    <h1>Danh sach sinh vien</h1>
 </html>

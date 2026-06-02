@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1> Login </h1>
-    <form action="/QLSV/public/auth/login" method="POST">
+    <form action="../sinhvien/index.php" method="POST">
         <Label>UserName: </Label>
         <input type="text" name="username" placeholder="userName"> <br>
         <Label>Password: </Label>
