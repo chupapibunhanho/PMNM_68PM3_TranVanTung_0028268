@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 class auth {
     protected $user = [
             "lxh"=>"lxh1",
@@ -7,6 +9,8 @@ class auth {
     ];
 
     public function login() {
+        $error = '';
+
         if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             $username = $_POST['username'] ?? '';
             $password = $_POST['password'] ?? '';
@@ -16,13 +20,13 @@ class auth {
                 header("Location: ../sinhvien/index");
                 exit();
             } else {
-                header('Location: login');
-                exit();
+                $error = 'Tai khoan hoac mat khau khong dung.';
             }
         }
 
         Controller::renderView('sinhvien/login', [
             'title' => 'Dang nhap',
+            'error' => $error,
         ]);
     }
 

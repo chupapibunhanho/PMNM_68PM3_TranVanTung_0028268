@@ -30,6 +30,28 @@
             <?php endforeach; ?>
         </tbody>
     </table>
+
+    <?php
+        $currentPage = $data['currentPage'] ?? 1;
+        $totalPages = $data['totalPages'] ?? 1;
+    ?>
+    <?php if ($totalPages > 1): ?>
+        <div class="pagination">
+            <?php if ($currentPage > 1): ?>
+                <a href="?url=sinhvien/index&page=<?php echo $currentPage - 1; ?>">Truoc</a>
+            <?php endif; ?>
+
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <a class="<?php echo $i === $currentPage ? 'active' : ''; ?>" href="?url=sinhvien/index&page=<?php echo $i; ?>">
+                    <?php echo $i; ?>
+                </a>
+            <?php endfor; ?>
+
+            <?php if ($currentPage < $totalPages): ?>
+                <a href="?url=sinhvien/index&page=<?php echo $currentPage + 1; ?>">Sau</a>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
 <?php else: ?>
     <p>Chua co du lieu sinh vien.</p>
 <?php endif; ?>

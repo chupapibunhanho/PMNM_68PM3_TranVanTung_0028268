@@ -2,6 +2,10 @@
 
 <h1>Login</h1>
 
+<?php if (!empty($data['error'])): ?>
+    <div class="error"><?php echo htmlspecialchars($data['error']); ?></div>
+<?php endif; ?>
+
 <form action="" method="POST">
     <div class="form-group">
         <label for="username">UserName:</label>

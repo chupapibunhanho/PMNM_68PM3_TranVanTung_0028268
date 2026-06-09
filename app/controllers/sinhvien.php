@@ -4,10 +4,23 @@ class sinhvien extends Controller
     public function index()
     {
         $sinhvienModel = $this->model('sinhvienModel');
-        $sinhviens = $sinhvienModel->getAllSinhVien();
+        $limit = 5;
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $page = max($page, 1);
+        $totalSinhVien = $sinhvienModel->countSinhVien();
+        $totalPages = max((int) ceil($totalSinhVien / $limit), 1);
+
+        if ($page > $totalPages) {
+            $page = $totalPages;
+        }
+
+        $offset = ($page - 1) * $limit;
+        $sinhviens = $sinhvienModel->paging($limit, $offset);
 
         $this->view('sinhvien/index', [
             'sinhviens' => $sinhviens,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
             'dbError' => $sinhvienModel->isConnected() ? '' : 'Chua ket noi duoc database. Hay kiem tra lai username/password trong connectDB.php.',
         ]);
     }

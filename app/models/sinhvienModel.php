@@ -27,6 +27,34 @@ class sinhvienModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function paging($limit = 5, $offset = 0)
+    {
+        if (!$this->conn) {
+            return [];
+        }
+
+        $sql = "SELECT * FROM " . $this->table . " LIMIT :limit OFFSET :offset";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function countSinhVien()
+    {
+        if (!$this->conn) {
+            return 0;
+        }
+
+        $sql = "SELECT COUNT(*) FROM " . $this->table;
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
+    }
+
     public function getColumns()
     {
         if (!$this->conn) {

@@ -111,6 +111,32 @@
             background: #f2f2f2;
         }
 
+        .pagination {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin: 18px 0;
+        }
+
+        .pagination a {
+            min-width: 34px;
+            padding: 8px 11px;
+            border: 1px solid #198754;
+            border-radius: 4px;
+            color: #198754;
+            background: #fff;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .pagination a.active,
+        .pagination a:hover {
+            color: #fff;
+            background: #198754;
+        }
+
         form {
             max-width: 520px;
             margin: 0 auto;
@@ -140,6 +166,8 @@
 </head>
 <body>
     <div class="topbar">
-        <a class="logout-button" href="../auth/logout">Dang xuat</a>
+        <?php if (!empty($_SESSION['username'])): ?>
+            <a class="logout-button" href="../auth/logout">Dang xuat</a>
+        <?php endif; ?>
     </div>
     <main class="page-content">
