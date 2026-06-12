@@ -21,6 +21,7 @@ class sinhvien extends Controller
             'sinhviens' => $sinhviens,
             'currentPage' => $page,
             'totalPages' => $totalPages,
+            'primaryKey' => $sinhvienModel->getPrimaryKeyColumn(),
             'dbError' => $sinhvienModel->isConnected() ? '' : 'Chua ket noi duoc database. Hay kiem tra lai username/password trong connectDB.php.',
         ]);
     }
@@ -43,5 +44,22 @@ class sinhvien extends Controller
             'columns' => $sinhvienModel->getEditableColumns(),
             'errors' => $errors,
         ]);
+    }
+
+    public function delete()
+    {
+        $sinhvienModel = $this->model('sinhvienModel');
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['id'] ?? '';
+
+            if ($id !== '') {
+                $sinhvienModel->deleteSinhVien($id);
+            }
+        }
+
+        $page = isset($_POST['page']) ? max((int) $_POST['page'], 1) : 1;
+        header('Location: ?url=sinhvien/index&page=' . $page);
+        exit();
     }
 }

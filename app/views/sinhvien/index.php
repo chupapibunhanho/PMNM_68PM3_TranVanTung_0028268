@@ -7,6 +7,7 @@
 </div>
 
 <?php $sinhviens = $data['sinhviens'] ?? []; ?>
+<?php $primaryKey = $data['primaryKey'] ?? ''; ?>
 <?php if (!empty($data['dbError'])): ?>
     <div class="notice"><?php echo htmlspecialchars($data['dbError']); ?></div>
 <?php endif; ?>
@@ -18,6 +19,7 @@
                 <?php foreach (array_keys($sinhviens[0]) as $column): ?>
                     <th><?php echo htmlspecialchars(ucfirst($column)); ?></th>
                 <?php endforeach; ?>
+                <th>Thao tac</th>
             </tr>
         </thead>
         <tbody>
@@ -26,6 +28,15 @@
                     <?php foreach ($sinhvien as $value): ?>
                         <td><?php echo htmlspecialchars($value); ?></td>
                     <?php endforeach; ?>
+                    <td>
+                        <?php if ($primaryKey !== '' && isset($sinhvien[$primaryKey])): ?>
+                            <form class="delete-form" action="?url=sinhvien/delete" method="post" onsubmit="return confirm('Ban co chac muon xoa sinh vien nay?');">
+                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($sinhvien[$primaryKey]); ?>">
+                                <input type="hidden" name="page" value="<?php echo htmlspecialchars($data['currentPage'] ?? 1); ?>">
+                                <button class="button danger" type="submit">Xoa</button>
+                            </form>
+                        <?php endif; ?>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

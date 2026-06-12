@@ -78,6 +78,15 @@
             background: #777;
         }
 
+        .button.danger {
+            border-color: #dc3545;
+            background: #dc3545;
+        }
+
+        .button.danger:hover {
+            background: #bb2d3b;
+        }
+
         .notice,
         .error {
             max-width: 720px;
@@ -140,6 +149,11 @@
         form {
             max-width: 520px;
             margin: 0 auto;
+        }
+
+        .delete-form {
+            max-width: none;
+            margin: 0;
         }
 
         .form-group {

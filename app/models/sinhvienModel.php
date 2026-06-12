@@ -66,6 +66,17 @@ class sinhvienModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getPrimaryKeyColumn()
+    {
+        foreach ($this->getColumns() as $column) {
+            if (($column['Key'] ?? '') === 'PRI') {
+                return $column['Field'];
+            }
+        }
+
+        return '';
+    }
+
     public function getEditableColumns()
     {
         return array_values(array_filter($this->getColumns(), function ($column) {
@@ -106,5 +117,24 @@ class sinhvienModel
         $stmt = $this->conn->prepare($sql);
 
         return $stmt->execute($insertData);
+    }
+
+    public function deleteSinhVien($id)
+    {
+        if (!$this->conn) {
+            return false;
+        }
+
+        $primaryKey = $this->getPrimaryKeyColumn();
+
+        if ($primaryKey === '') {
+            return false;
+        }
+
+        $quotedPrimaryKey = '`' . str_replace('`', '``', $primaryKey) . '`';
+        $sql = "DELETE FROM " . $this->table . " WHERE " . $quotedPrimaryKey . " = :id";
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute(['id' => $id]);
     }
 }
