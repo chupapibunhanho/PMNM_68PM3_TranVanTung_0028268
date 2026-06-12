@@ -84,6 +84,25 @@ class sinhvienModel
         }));
     }
 
+    public function getUpdatableColumns()
+    {
+        $primaryKey = $this->getPrimaryKeyColumn();
+
+        return array_values(array_filter($this->getColumns(), function ($column) use ($primaryKey) {
+            $field = $column['Field'] ?? '';
+
+            if ($field === $primaryKey) {
+                return false;
+            }
+
+            if (strtolower($field) === 'msv') {
+                return false;
+            }
+
+            return stripos($column['Extra'] ?? '', 'auto_increment') === false;
+        }));
+    }
+
     public function createSinhVien($data)
     {
         if (!$this->conn) {
@@ -136,5 +155,43 @@ class sinhvienModel
         $stmt = $this->conn->prepare($sql);
 
         return $stmt->execute(['id' => $id]);
+    }
+
+    public function updateSinhVien($id, $data)
+    {
+        if (!$this->conn) {
+            return false;
+        }
+
+        $primaryKey = $this->getPrimaryKeyColumn();
+
+        if ($primaryKey === '' || $id === '') {
+            return false;
+        }
+
+        $columns = array_column($this->getUpdatableColumns(), 'Field');
+        $updateData = [];
+
+        foreach ($columns as $column) {
+            if (array_key_exists($column, $data)) {
+                $updateData[$column] = trim($data[$column]);
+            }
+        }
+
+        if (empty($updateData)) {
+            return false;
+        }
+
+        $setParts = array_map(function ($field) {
+            $quotedField = '`' . str_replace('`', '``', $field) . '`';
+            return $quotedField . ' = :' . $field;
+        }, array_keys($updateData));
+
+        $quotedPrimaryKey = '`' . str_replace('`', '``', $primaryKey) . '`';
+        $sql = "UPDATE " . $this->table . " SET " . implode(', ', $setParts) . " WHERE " . $quotedPrimaryKey . " = :id";
+        $stmt = $this->conn->prepare($sql);
+        $updateData['id'] = $id;
+
+        return $stmt->execute($updateData);
     }
 }

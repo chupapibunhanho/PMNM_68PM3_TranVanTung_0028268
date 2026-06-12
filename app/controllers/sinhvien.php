@@ -62,4 +62,21 @@ class sinhvien extends Controller
         header('Location: ?url=sinhvien/index&page=' . $page);
         exit();
     }
+
+    public function update()
+    {
+        $sinhvienModel = $this->model('sinhvienModel');
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['id'] ?? '';
+
+            if ($id !== '') {
+                $sinhvienModel->updateSinhVien($id, $_POST);
+            }
+        }
+
+        $page = isset($_POST['page']) ? max((int) $_POST['page'], 1) : 1;
+        header('Location: ?url=sinhvien/index&page=' . $page);
+        exit();
+    }
 }
