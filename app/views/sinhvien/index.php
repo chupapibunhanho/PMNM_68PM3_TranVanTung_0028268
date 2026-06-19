@@ -3,6 +3,9 @@
 <?php $currentPage = $data['currentPage'] ?? 1; ?>
 <?php $columns = $data['columns'] ?? []; ?>
 <?php $lopHocs = $data['lopHocs'] ?? []; ?>
+<?php $lopHocRows = $data['lopHocRows'] ?? []; ?>
+<?php $currentLopHocPage = $data['currentLopHocPage'] ?? 1; ?>
+<?php $totalLopHocPages = $data['totalLopHocPages'] ?? 1; ?>
 <?php $filters = $data['filters'] ?? ['mssv' => '', 'hoten' => '', 'lop' => '']; ?>
 <?php $activePanel = ($_GET['panel'] ?? 'sinhvien') === 'lophoc' ? 'lophoc' : 'sinhvien'; ?>
 <?php
@@ -131,7 +134,7 @@
         <button class="button" type="button" id="openCreateLopHocModal">Them moi</button>
     </div>
 
-    <?php if (!empty($lopHocs)): ?>
+    <?php if (!empty($lopHocRows)): ?>
         <table>
             <thead>
                 <tr>
@@ -142,7 +145,7 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($lopHocs as $lopHoc): ?>
+                <?php foreach ($lopHocRows as $lopHoc): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($lopHoc['malop']); ?></td>
                         <td><?php echo htmlspecialchars($lopHoc['tenlop']); ?></td>
@@ -156,6 +159,7 @@
                             </button>
                             <form class="delete-form" action="../sinhvien/deleteLopHoc" method="post" onsubmit="return confirm('Ban co chac muon xoa lop hoc nay?');">
                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($lopHoc['malop']); ?>">
+                                <input type="hidden" name="lophoc_page" value="<?php echo htmlspecialchars($currentLopHocPage); ?>">
                                 <button class="button danger" type="submit">Xoa</button>
                             </form>
                         </td>
@@ -163,6 +167,24 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
+
+        <?php if ($totalLopHocPages > 1): ?>
+            <div class="pagination">
+                <?php if ($currentLopHocPage > 1): ?>
+                    <a href="../sinhvien/index?panel=lophoc&lophoc_page=<?php echo $currentLopHocPage - 1; ?>">Truoc</a>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $totalLopHocPages; $i++): ?>
+                    <a class="<?php echo $i === $currentLopHocPage ? 'active' : ''; ?>" href="../sinhvien/index?panel=lophoc&lophoc_page=<?php echo $i; ?>">
+                        <?php echo $i; ?>
+                    </a>
+                <?php endfor; ?>
+
+                <?php if ($currentLopHocPage < $totalLopHocPages): ?>
+                    <a href="../sinhvien/index?panel=lophoc&lophoc_page=<?php echo $currentLopHocPage + 1; ?>">Sau</a>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
     <?php else: ?>
         <p>Chua co du lieu lop hoc.</p>
     <?php endif; ?>
@@ -205,6 +227,7 @@
 
             <form action="../sinhvien/updateLopHoc" method="post">
                 <input type="hidden" name="id" id="edit-lophoc-id">
+                <input type="hidden" name="lophoc_page" value="<?php echo htmlspecialchars($currentLopHocPage); ?>">
                 <div class="form-group">
                     <label for="edit-lophoc-malop">Ma lop</label>
                     <input type="text" id="edit-lophoc-malop" data-lophoc-field="malop" readonly>

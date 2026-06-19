@@ -21,11 +21,25 @@ class sinhvien extends Controller
 
         $offset = ($page - 1) * $limit;
         $sinhviens = $sinhvienModel->paging($limit, $offset, $filters);
+        $lopHocPage = isset($_GET['lophoc_page']) ? (int) $_GET['lophoc_page'] : 1;
+        $lopHocPage = max($lopHocPage, 1);
+        $totalLopHoc = $sinhvienModel->countLopHoc();
+        $totalLopHocPages = max((int) ceil($totalLopHoc / $limit), 1);
+
+        if ($lopHocPage > $totalLopHocPages) {
+            $lopHocPage = $totalLopHocPages;
+        }
+
+        $lopHocOffset = ($lopHocPage - 1) * $limit;
+        $lopHocRows = $sinhvienModel->pagingLopHoc($limit, $lopHocOffset);
 
         $this->view('sinhvien/index', [
             'sinhviens' => $sinhviens,
             'currentPage' => $page,
             'totalPages' => $totalPages,
+            'lopHocRows' => $lopHocRows,
+            'currentLopHocPage' => $lopHocPage,
+            'totalLopHocPages' => $totalLopHocPages,
             'filters' => $filters,
             'primaryKey' => $sinhvienModel->getPrimaryKeyColumn(),
             'columns' => $sinhvienModel->getColumns(),
@@ -118,8 +132,9 @@ class sinhvien extends Controller
             }
         }
 
+        $page = isset($_POST['lophoc_page']) ? max((int) $_POST['lophoc_page'], 1) : 1;
         $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
-        header('Location: ' . $basePath . '/sinhvien/index?panel=lophoc' . $error);
+        header('Location: ' . $basePath . '/sinhvien/index?panel=lophoc&lophoc_page=' . $page . $error);
         exit();
     }
 
@@ -136,8 +151,9 @@ class sinhvien extends Controller
             }
         }
 
+        $page = isset($_POST['lophoc_page']) ? max((int) $_POST['lophoc_page'], 1) : 1;
         $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
-        header('Location: ' . $basePath . '/sinhvien/index?panel=lophoc' . $error);
+        header('Location: ' . $basePath . '/sinhvien/index?panel=lophoc&lophoc_page=' . $page . $error);
         exit();
     }
 }

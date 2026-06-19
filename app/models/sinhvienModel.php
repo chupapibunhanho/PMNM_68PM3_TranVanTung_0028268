@@ -131,6 +131,34 @@ class sinhvienModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function pagingLopHoc($limit = 5, $offset = 0)
+    {
+        if (!$this->conn) {
+            return [];
+        }
+
+        $sql = "SELECT malop, tenlop, namhoc FROM " . $this->classTable . " ORDER BY malop LIMIT :limit OFFSET :offset";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function countLopHoc()
+    {
+        if (!$this->conn) {
+            return 0;
+        }
+
+        $sql = "SELECT COUNT(*) FROM " . $this->classTable;
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
+    }
+
     public function createLopHoc($data)
     {
         if (!$this->conn) {
