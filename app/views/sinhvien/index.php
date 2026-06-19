@@ -150,7 +150,11 @@
                 <?php foreach ($lopHocRows as $lopHoc): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($lopHoc['malop']); ?></td>
-                        <td><?php echo htmlspecialchars($lopHoc['tenlop']); ?></td>
+                        <td>
+                            <a href="../sinhvien/index?panel=sinhvien&lop=<?php echo urlencode($lopHoc['malop']); ?>">
+                                <?php echo htmlspecialchars($lopHoc['tenlop']); ?>
+                            </a>
+                        </td>
                         <td><?php echo htmlspecialchars($lopHoc['namhoc']); ?></td>
                         <td class="action-cell">
                             <button
