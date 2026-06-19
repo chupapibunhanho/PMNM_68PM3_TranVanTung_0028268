@@ -28,14 +28,14 @@ class sinhvienModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function paging($limit = 5, $offset = 0, $filters = [])
+    public function paging($limit = 5, $offset = 0, $filters = [], $sort = [])
     {
         if (!$this->conn) {
             return [];
         }
 
         $whereData = $this->buildSinhVienSearchWhere($filters);
-        $sql = $this->getSinhVienSelectSql($whereData['where']) . " LIMIT :limit OFFSET :offset";
+        $sql = $this->getSinhVienSelectSql($whereData['where'], $sort) . " LIMIT :limit OFFSET :offset";
         $stmt = $this->conn->prepare($sql);
 
         foreach ($whereData['params'] as $param => $value) {
@@ -352,11 +352,31 @@ class sinhvienModel
         ];
     }
 
-    private function getSinhVienSelectSql($where = '')
+    private function getSinhVienOrderBy($sort)
+    {
+        $fieldMap = [
+            'mssv' => 'sv.mssv',
+            'hoten' => 'sv.hoten',
+        ];
+        $field = $sort['field'] ?? 'mssv';
+        $direction = strtoupper($sort['direction'] ?? 'ASC');
+
+        if (!isset($fieldMap[$field])) {
+            $field = 'mssv';
+        }
+
+        if (!in_array($direction, ['ASC', 'DESC'], true)) {
+            $direction = 'ASC';
+        }
+
+        return ' ORDER BY ' . $fieldMap[$field] . ' ' . $direction . ', sv.mssv ASC';
+    }
+
+    private function getSinhVienSelectSql($where = '', $sort = [])
     {
         return "SELECT sv.*, lh.tenlop
                 FROM " . $this->table . " sv
                 LEFT JOIN " . $this->classTable . " lh ON sv.malop = lh.malop" . $where . "
-                ORDER BY sv.mssv";
+                " . $this->getSinhVienOrderBy($sort);
     }
 }

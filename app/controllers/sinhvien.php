@@ -10,6 +10,12 @@ class sinhvien extends Controller
             'hoten' => trim($_GET['hoten'] ?? ''),
             'lop' => trim($_GET['lop'] ?? ''),
         ];
+        $sortField = $_GET['sort_field'] ?? 'mssv';
+        $sortDirection = $_GET['sort_direction'] ?? 'asc';
+        $sort = [
+            'field' => in_array($sortField, ['mssv', 'hoten'], true) ? $sortField : 'mssv',
+            'direction' => in_array($sortDirection, ['asc', 'desc'], true) ? $sortDirection : 'asc',
+        ];
         $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
         $page = max($page, 1);
         $totalSinhVien = $sinhvienModel->countSinhVien($filters);
@@ -20,7 +26,7 @@ class sinhvien extends Controller
         }
 
         $offset = ($page - 1) * $limit;
-        $sinhviens = $sinhvienModel->paging($limit, $offset, $filters);
+        $sinhviens = $sinhvienModel->paging($limit, $offset, $filters, $sort);
         $lopHocPage = isset($_GET['lophoc_page']) ? (int) $_GET['lophoc_page'] : 1;
         $lopHocPage = max($lopHocPage, 1);
         $totalLopHoc = $sinhvienModel->countLopHoc();
@@ -41,6 +47,7 @@ class sinhvien extends Controller
             'currentLopHocPage' => $lopHocPage,
             'totalLopHocPages' => $totalLopHocPages,
             'filters' => $filters,
+            'sort' => $sort,
             'primaryKey' => $sinhvienModel->getPrimaryKeyColumn(),
             'columns' => $sinhvienModel->getColumns(),
             'lopHocs' => $sinhvienModel->getLopHocList(),

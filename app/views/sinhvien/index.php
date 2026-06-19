@@ -7,6 +7,7 @@
 <?php $currentLopHocPage = $data['currentLopHocPage'] ?? 1; ?>
 <?php $totalLopHocPages = $data['totalLopHocPages'] ?? 1; ?>
 <?php $filters = $data['filters'] ?? ['mssv' => '', 'hoten' => '', 'lop' => '']; ?>
+<?php $sort = $data['sort'] ?? ['field' => 'mssv', 'direction' => 'asc']; ?>
 <?php $activePanel = ($_GET['panel'] ?? 'sinhvien') === 'lophoc' ? 'lophoc' : 'sinhvien'; ?>
 <?php
     $labels = [
@@ -63,7 +64,7 @@
     .search-form {
         max-width: none;
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(6, minmax(0, 1fr));
         gap: 10px;
         align-items: end;
         margin: 0 0 16px;
@@ -80,6 +81,7 @@
         display: flex;
         gap: 8px;
         align-items: center;
+        grid-column: span 1;
     }
 
     @media (max-width: 640px) {
@@ -331,6 +333,20 @@
                 name="lop"
                 value="<?php echo htmlspecialchars($filters['lop'] ?? ''); ?>">
         </div>
+        <div class="form-group">
+            <label for="sort-field">Sap xep</label>
+            <select id="sort-field" name="sort_field">
+                <option value="mssv" <?php echo (($sort['field'] ?? '') === 'mssv') ? 'selected' : ''; ?>>Theo MSSV</option>
+                <option value="hoten" <?php echo (($sort['field'] ?? '') === 'hoten') ? 'selected' : ''; ?>>Theo ho ten</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="sort-direction">Thu tu</label>
+            <select id="sort-direction" name="sort_direction">
+                <option value="asc" <?php echo (($sort['direction'] ?? '') === 'asc') ? 'selected' : ''; ?>>Tu tren xuong</option>
+                <option value="desc" <?php echo (($sort['direction'] ?? '') === 'desc') ? 'selected' : ''; ?>>Tu duoi len</option>
+            </select>
+        </div>
         <div class="search-actions">
             <button type="submit">Tim</button>
             <a class="button secondary" href="../sinhvien/index?panel=sinhvien">Xoa loc</a>
@@ -384,6 +400,8 @@
             'mssv' => $filters['mssv'] ?? '',
             'hoten' => $filters['hoten'] ?? '',
             'lop' => $filters['lop'] ?? '',
+            'sort_field' => $sort['field'] ?? 'mssv',
+            'sort_direction' => $sort['direction'] ?? 'asc',
         ], function ($value) {
             return $value !== '';
         });
