@@ -10,6 +10,9 @@ class sinhvien extends Controller
             'hoten' => trim($_GET['hoten'] ?? ''),
             'lop' => trim($_GET['lop'] ?? ''),
         ];
+        $lopHocFilters = [
+            'malop' => trim($_GET['lophoc_malop'] ?? ''),
+        ];
         $sortField = $_GET['sort_field'] ?? 'mssv';
         $sortDirection = $_GET['sort_direction'] ?? 'asc';
         $sort = [
@@ -29,7 +32,7 @@ class sinhvien extends Controller
         $sinhviens = $sinhvienModel->paging($limit, $offset, $filters, $sort);
         $lopHocPage = isset($_GET['lophoc_page']) ? (int) $_GET['lophoc_page'] : 1;
         $lopHocPage = max($lopHocPage, 1);
-        $totalLopHoc = $sinhvienModel->countLopHoc();
+        $totalLopHoc = $sinhvienModel->countLopHoc($lopHocFilters);
         $totalLopHocPages = max((int) ceil($totalLopHoc / $limit), 1);
 
         if ($lopHocPage > $totalLopHocPages) {
@@ -37,7 +40,7 @@ class sinhvien extends Controller
         }
 
         $lopHocOffset = ($lopHocPage - 1) * $limit;
-        $lopHocRows = $sinhvienModel->pagingLopHoc($limit, $lopHocOffset);
+        $lopHocRows = $sinhvienModel->pagingLopHoc($limit, $lopHocOffset, $lopHocFilters);
 
         $this->view('sinhvien/index', [
             'sinhviens' => $sinhviens,
@@ -47,6 +50,7 @@ class sinhvien extends Controller
             'currentLopHocPage' => $lopHocPage,
             'totalLopHocPages' => $totalLopHocPages,
             'filters' => $filters,
+            'lopHocFilters' => $lopHocFilters,
             'sort' => $sort,
             'primaryKey' => $sinhvienModel->getPrimaryKeyColumn(),
             'columns' => $sinhvienModel->getColumns(),
@@ -140,8 +144,10 @@ class sinhvien extends Controller
         }
 
         $page = isset($_POST['lophoc_page']) ? max((int) $_POST['lophoc_page'], 1) : 1;
+        $malop = trim($_POST['lophoc_malop'] ?? '');
+        $filterQuery = $malop !== '' ? '&lophoc_malop=' . urlencode($malop) : '';
         $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
-        header('Location: ' . $basePath . '/sinhvien/index?panel=lophoc&lophoc_page=' . $page . $error);
+        header('Location: ' . $basePath . '/sinhvien/index?panel=lophoc&lophoc_page=' . $page . $filterQuery . $error);
         exit();
     }
 
@@ -159,8 +165,10 @@ class sinhvien extends Controller
         }
 
         $page = isset($_POST['lophoc_page']) ? max((int) $_POST['lophoc_page'], 1) : 1;
+        $malop = trim($_POST['lophoc_malop'] ?? '');
+        $filterQuery = $malop !== '' ? '&lophoc_malop=' . urlencode($malop) : '';
         $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
-        header('Location: ' . $basePath . '/sinhvien/index?panel=lophoc&lophoc_page=' . $page . $error);
+        header('Location: ' . $basePath . '/sinhvien/index?panel=lophoc&lophoc_page=' . $page . $filterQuery . $error);
         exit();
     }
 }

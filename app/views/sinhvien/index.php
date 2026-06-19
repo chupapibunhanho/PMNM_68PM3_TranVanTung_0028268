@@ -7,6 +7,7 @@
 <?php $currentLopHocPage = $data['currentLopHocPage'] ?? 1; ?>
 <?php $totalLopHocPages = $data['totalLopHocPages'] ?? 1; ?>
 <?php $filters = $data['filters'] ?? ['mssv' => '', 'hoten' => '', 'lop' => '']; ?>
+<?php $lopHocFilters = $data['lopHocFilters'] ?? ['malop' => '']; ?>
 <?php $sort = $data['sort'] ?? ['field' => 'mssv', 'direction' => 'asc']; ?>
 <?php $activePanel = ($_GET['panel'] ?? 'sinhvien') === 'lophoc' ? 'lophoc' : 'sinhvien'; ?>
 <?php
@@ -161,6 +162,22 @@
 <?php endif; ?>
 
 <?php if ($activePanel === 'lophoc'): ?>
+    <form class="search-form" action="../sinhvien/index" method="get">
+        <input type="hidden" name="panel" value="lophoc">
+        <div class="form-group">
+            <label for="search-lophoc-malop">Ma lop</label>
+            <input
+                type="text"
+                id="search-lophoc-malop"
+                name="lophoc_malop"
+                value="<?php echo htmlspecialchars($lopHocFilters['malop'] ?? ''); ?>">
+        </div>
+        <div class="search-actions">
+            <button type="submit">Tim</button>
+            <a class="button secondary" href="../sinhvien/index?panel=lophoc">Xoa loc</a>
+        </div>
+    </form>
+
     <div class="toolbar">
         <button class="button" type="button" id="openCreateLopHocModal">Them moi</button>
     </div>
@@ -195,6 +212,7 @@
                             <form class="delete-form" action="../sinhvien/deleteLopHoc" method="post" onsubmit="return confirm('Ban co chac muon xoa lop hoc nay?');">
                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($lopHoc['malop']); ?>">
                                 <input type="hidden" name="lophoc_page" value="<?php echo htmlspecialchars($currentLopHocPage); ?>">
+                                <input type="hidden" name="lophoc_malop" value="<?php echo htmlspecialchars($lopHocFilters['malop'] ?? ''); ?>">
                                 <button class="button danger" type="submit">Xoa</button>
                             </form>
                         </td>
@@ -204,19 +222,30 @@
         </table>
 
         <?php if ($totalLopHocPages > 1): ?>
+            <?php
+                $lopHocQuery = array_filter([
+                    'panel' => 'lophoc',
+                    'lophoc_malop' => $lopHocFilters['malop'] ?? '',
+                ], function ($value) {
+                    return $value !== '';
+                });
+            ?>
             <div class="pagination">
                 <?php if ($currentLopHocPage > 1): ?>
-                    <a href="../sinhvien/index?panel=lophoc&lophoc_page=<?php echo $currentLopHocPage - 1; ?>">Truoc</a>
+                    <?php $lopHocQuery['lophoc_page'] = $currentLopHocPage - 1; ?>
+                    <a href="../sinhvien/index?<?php echo htmlspecialchars(http_build_query($lopHocQuery)); ?>">Truoc</a>
                 <?php endif; ?>
 
                 <?php for ($i = 1; $i <= $totalLopHocPages; $i++): ?>
-                    <a class="<?php echo $i === $currentLopHocPage ? 'active' : ''; ?>" href="../sinhvien/index?panel=lophoc&lophoc_page=<?php echo $i; ?>">
+                    <?php $lopHocQuery['lophoc_page'] = $i; ?>
+                    <a class="<?php echo $i === $currentLopHocPage ? 'active' : ''; ?>" href="../sinhvien/index?<?php echo htmlspecialchars(http_build_query($lopHocQuery)); ?>">
                         <?php echo $i; ?>
                     </a>
                 <?php endfor; ?>
 
                 <?php if ($currentLopHocPage < $totalLopHocPages): ?>
-                    <a href="../sinhvien/index?panel=lophoc&lophoc_page=<?php echo $currentLopHocPage + 1; ?>">Sau</a>
+                    <?php $lopHocQuery['lophoc_page'] = $currentLopHocPage + 1; ?>
+                    <a href="../sinhvien/index?<?php echo htmlspecialchars(http_build_query($lopHocQuery)); ?>">Sau</a>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
@@ -263,6 +292,7 @@
             <form action="../sinhvien/updateLopHoc" method="post">
                 <input type="hidden" name="id" id="edit-lophoc-id">
                 <input type="hidden" name="lophoc_page" value="<?php echo htmlspecialchars($currentLopHocPage); ?>">
+                <input type="hidden" name="lophoc_malop" value="<?php echo htmlspecialchars($lopHocFilters['malop'] ?? ''); ?>">
                 <div class="form-group">
                     <label for="edit-lophoc-malop">Ma lop</label>
                     <input type="text" id="edit-lophoc-malop" data-lophoc-field="malop" readonly>

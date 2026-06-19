@@ -131,14 +131,20 @@ class sinhvienModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function pagingLopHoc($limit = 5, $offset = 0)
+    public function pagingLopHoc($limit = 5, $offset = 0, $filters = [])
     {
         if (!$this->conn) {
             return [];
         }
 
-        $sql = "SELECT malop, tenlop, namhoc FROM " . $this->classTable . " ORDER BY malop LIMIT :limit OFFSET :offset";
+        $whereData = $this->buildLopHocSearchWhere($filters);
+        $sql = "SELECT malop, tenlop, namhoc FROM " . $this->classTable . $whereData['where'] . " ORDER BY malop LIMIT :limit OFFSET :offset";
         $stmt = $this->conn->prepare($sql);
+
+        foreach ($whereData['params'] as $param => $value) {
+            $stmt->bindValue($param, $value);
+        }
+
         $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
         $stmt->execute();
@@ -146,14 +152,20 @@ class sinhvienModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function countLopHoc()
+    public function countLopHoc($filters = [])
     {
         if (!$this->conn) {
             return 0;
         }
 
-        $sql = "SELECT COUNT(*) FROM " . $this->classTable;
+        $whereData = $this->buildLopHocSearchWhere($filters);
+        $sql = "SELECT COUNT(*) FROM " . $this->classTable . $whereData['where'];
         $stmt = $this->conn->prepare($sql);
+
+        foreach ($whereData['params'] as $param => $value) {
+            $stmt->bindValue($param, $value);
+        }
+
         $stmt->execute();
 
         return (int) $stmt->fetchColumn();
@@ -349,6 +361,25 @@ class sinhvienModel
         return [
             'where' => empty($conditions) ? '' : ' WHERE ' . implode(' AND ', $conditions),
             'params' => $params,
+        ];
+    }
+
+    private function buildLopHocSearchWhere($filters)
+    {
+        $malop = trim($filters['malop'] ?? '');
+
+        if ($malop === '') {
+            return [
+                'where' => '',
+                'params' => [],
+            ];
+        }
+
+        return [
+            'where' => ' WHERE malop LIKE :malop',
+            'params' => [
+                ':malop' => '%' . $malop . '%',
+            ],
         ];
     }
 
