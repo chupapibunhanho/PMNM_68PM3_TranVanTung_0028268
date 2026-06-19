@@ -218,11 +218,13 @@
             font-weight: 600;
         }
 
-        input {
+        input,
+        select {
             width: 100%;
             padding: 9px 10px;
             border: 1px solid #bbb;
             border-radius: 4px;
+            background: #fff;
         }
 
         input[readonly] {

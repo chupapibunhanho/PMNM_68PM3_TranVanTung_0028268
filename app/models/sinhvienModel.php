@@ -2,6 +2,7 @@
 class sinhvienModel
 {
     private $table = 'sinhvien';
+    private $classTable = 'lophoc';
     private $conn;
 
     public function __construct()
@@ -20,7 +21,7 @@ class sinhvienModel
             return [];
         }
 
-        $sql = "SELECT * FROM " . $this->table;
+        $sql = $this->getSinhVienSelectSql();
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
 
@@ -33,7 +34,7 @@ class sinhvienModel
             return [];
         }
 
-        $sql = "SELECT * FROM " . $this->table . " LIMIT :limit OFFSET :offset";
+        $sql = $this->getSinhVienSelectSql() . " LIMIT :limit OFFSET :offset";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
@@ -101,6 +102,90 @@ class sinhvienModel
 
             return stripos($column['Extra'] ?? '', 'auto_increment') === false;
         }));
+    }
+
+    public function getLopHocList()
+    {
+        if (!$this->conn) {
+            return [];
+        }
+
+        $sql = "SELECT malop, tenlop, namhoc FROM " . $this->classTable . " ORDER BY malop";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function createLopHoc($data)
+    {
+        if (!$this->conn) {
+            return false;
+        }
+
+        $lopHocData = [
+            'malop' => trim($data['malop'] ?? ''),
+            'tenlop' => trim($data['tenlop'] ?? ''),
+            'namhoc' => trim($data['namhoc'] ?? ''),
+        ];
+
+        if ($lopHocData['malop'] === '' || $lopHocData['tenlop'] === '') {
+            return false;
+        }
+
+        $sql = "INSERT INTO " . $this->classTable . " (malop, tenlop, namhoc)
+                VALUES (:malop, :tenlop, :namhoc)";
+        $stmt = $this->conn->prepare($sql);
+
+        try {
+            return $stmt->execute($lopHocData);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function updateLopHoc($id, $data)
+    {
+        if (!$this->conn || $id === '') {
+            return false;
+        }
+
+        $lopHocData = [
+            'tenlop' => trim($data['tenlop'] ?? ''),
+            'namhoc' => trim($data['namhoc'] ?? ''),
+            'id' => $id,
+        ];
+
+        if ($lopHocData['tenlop'] === '') {
+            return false;
+        }
+
+        $sql = "UPDATE " . $this->classTable . "
+                SET tenlop = :tenlop, namhoc = :namhoc
+                WHERE malop = :id";
+        $stmt = $this->conn->prepare($sql);
+
+        try {
+            return $stmt->execute($lopHocData);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function deleteLopHoc($id)
+    {
+        if (!$this->conn || $id === '') {
+            return false;
+        }
+
+        $sql = "DELETE FROM " . $this->classTable . " WHERE malop = :id";
+        $stmt = $this->conn->prepare($sql);
+
+        try {
+            return $stmt->execute(['id' => $id]);
+        } catch (PDOException $e) {
+            return false;
+        }
     }
 
     public function createSinhVien($data)
@@ -193,5 +278,13 @@ class sinhvienModel
         $updateData['id'] = $id;
 
         return $stmt->execute($updateData);
+    }
+
+    private function getSinhVienSelectSql()
+    {
+        return "SELECT sv.*, lh.tenlop
+                FROM " . $this->table . " sv
+                LEFT JOIN " . $this->classTable . " lh ON sv.malop = lh.malop
+                ORDER BY sv.mssv";
     }
 }

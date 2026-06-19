@@ -13,7 +13,8 @@ class middleware
         ];
 
         if (!isset($_SESSION['username']) && !in_array($url, $publicPages)) {
-            header('Location: ?url=auth/login');
+            $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
+            header('Location: ' . $basePath . '/auth/login');
             exit();
         }
     }

@@ -9,6 +9,7 @@
 <?php endif; ?>
 
 <form action="../sinhvien/create" method="post">
+    <?php $lopHocs = $data['lopHocs'] ?? []; ?>
     <?php foreach (($data['columns'] ?? []) as $column): ?>
         <?php
             $field = $column['Field'];
@@ -20,13 +21,29 @@
             <label for="<?php echo htmlspecialchars($field); ?>">
                 <?php echo htmlspecialchars(ucfirst($field)); ?>
             </label>
-            <input
-                type="<?php echo $type; ?>"
-                id="<?php echo htmlspecialchars($field); ?>"
-                name="<?php echo htmlspecialchars($field); ?>"
-                value="<?php echo htmlspecialchars($value); ?>"
-                <?php echo $required; ?>
-            >
+            <?php if ($field === 'malop'): ?>
+                <select
+                    id="<?php echo htmlspecialchars($field); ?>"
+                    name="<?php echo htmlspecialchars($field); ?>"
+                    <?php echo $required; ?>
+                >
+                    <option value="">Chon lop hoc</option>
+                    <?php foreach ($lopHocs as $lopHoc): ?>
+                        <?php $selected = ($value === ($lopHoc['malop'] ?? '')) ? 'selected' : ''; ?>
+                        <option value="<?php echo htmlspecialchars($lopHoc['malop']); ?>" <?php echo $selected; ?>>
+                            <?php echo htmlspecialchars($lopHoc['malop'] . ' - ' . $lopHoc['tenlop']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            <?php else: ?>
+                <input
+                    type="<?php echo $type; ?>"
+                    id="<?php echo htmlspecialchars($field); ?>"
+                    name="<?php echo htmlspecialchars($field); ?>"
+                    value="<?php echo htmlspecialchars($value); ?>"
+                    <?php echo $required; ?>
+                >
+            <?php endif; ?>
         </div>
     <?php endforeach; ?>
 

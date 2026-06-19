@@ -22,6 +22,8 @@ class sinhvien extends Controller
             'currentPage' => $page,
             'totalPages' => $totalPages,
             'primaryKey' => $sinhvienModel->getPrimaryKeyColumn(),
+            'columns' => $sinhvienModel->getColumns(),
+            'lopHocs' => $sinhvienModel->getLopHocList(),
             'dbError' => $sinhvienModel->isConnected() ? '' : 'Chua ket noi duoc database. Hay kiem tra lai username/password trong connectDB.php.',
         ]);
     }
@@ -42,6 +44,7 @@ class sinhvien extends Controller
 
         $this->view('sinhvien/create', [
             'columns' => $sinhvienModel->getEditableColumns(),
+            'lopHocs' => $sinhvienModel->getLopHocList(),
             'errors' => $errors,
         ]);
     }
@@ -59,7 +62,8 @@ class sinhvien extends Controller
         }
 
         $page = isset($_POST['page']) ? max((int) $_POST['page'], 1) : 1;
-        header('Location: ?url=sinhvien/index&page=' . $page);
+        $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
+        header('Location: ' . $basePath . '/sinhvien/index?page=' . $page);
         exit();
     }
 
@@ -76,7 +80,58 @@ class sinhvien extends Controller
         }
 
         $page = isset($_POST['page']) ? max((int) $_POST['page'], 1) : 1;
-        header('Location: ?url=sinhvien/index&page=' . $page);
+        $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
+        header('Location: ' . $basePath . '/sinhvien/index?page=' . $page);
+        exit();
+    }
+
+    public function createLopHoc()
+    {
+        $sinhvienModel = $this->model('sinhvienModel');
+        $error = '';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$sinhvienModel->createLopHoc($_POST)) {
+            $error = '&error=create_lophoc';
+        }
+
+        $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
+        header('Location: ' . $basePath . '/sinhvien/index?panel=lophoc' . $error);
+        exit();
+    }
+
+    public function updateLopHoc()
+    {
+        $sinhvienModel = $this->model('sinhvienModel');
+        $error = '';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['id'] ?? '';
+
+            if ($id === '' || !$sinhvienModel->updateLopHoc($id, $_POST)) {
+                $error = '&error=update_lophoc';
+            }
+        }
+
+        $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
+        header('Location: ' . $basePath . '/sinhvien/index?panel=lophoc' . $error);
+        exit();
+    }
+
+    public function deleteLopHoc()
+    {
+        $sinhvienModel = $this->model('sinhvienModel');
+        $error = '';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['id'] ?? '';
+
+            if ($id === '' || !$sinhvienModel->deleteLopHoc($id)) {
+                $error = '&error=delete_lophoc';
+            }
+        }
+
+        $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
+        header('Location: ' . $basePath . '/sinhvien/index?panel=lophoc' . $error);
         exit();
     }
 }

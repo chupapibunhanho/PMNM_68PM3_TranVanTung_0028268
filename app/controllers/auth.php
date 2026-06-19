@@ -17,7 +17,8 @@ class auth {
             
             if(isset($this->user[$username]) && $this->user[$username] == $password) {
                 $_SESSION['username'] = $username;
-                header("Location: ../sinhvien/index");
+                $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
+                header("Location: " . $basePath . "/sinhvien/index");
                 exit();
             } else {
                 $error = 'Tai khoan hoac mat khau khong dung.';
@@ -42,7 +43,8 @@ class auth {
             setcookie('password', '', time() - 3600, '/');
         }
 
-        header('Location: login');
+        $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
+        header('Location: ' . $basePath . '/auth/login');
         exit();
     }
 }
