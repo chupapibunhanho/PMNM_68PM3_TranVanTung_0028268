@@ -28,14 +28,20 @@ class sinhvienModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function paging($limit = 5, $offset = 0)
+    public function paging($limit = 5, $offset = 0, $filters = [])
     {
         if (!$this->conn) {
             return [];
         }
 
-        $sql = $this->getSinhVienSelectSql() . " LIMIT :limit OFFSET :offset";
+        $whereData = $this->buildSinhVienSearchWhere($filters);
+        $sql = $this->getSinhVienSelectSql($whereData['where']) . " LIMIT :limit OFFSET :offset";
         $stmt = $this->conn->prepare($sql);
+
+        foreach ($whereData['params'] as $param => $value) {
+            $stmt->bindValue($param, $value);
+        }
+
         $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
         $stmt->execute();
@@ -43,14 +49,22 @@ class sinhvienModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function countSinhVien()
+    public function countSinhVien($filters = [])
     {
         if (!$this->conn) {
             return 0;
         }
 
-        $sql = "SELECT COUNT(*) FROM " . $this->table;
+        $whereData = $this->buildSinhVienSearchWhere($filters);
+        $sql = "SELECT COUNT(*)
+                FROM " . $this->table . " sv
+                LEFT JOIN " . $this->classTable . " lh ON sv.malop = lh.malop" . $whereData['where'];
         $stmt = $this->conn->prepare($sql);
+
+        foreach ($whereData['params'] as $param => $value) {
+            $stmt->bindValue($param, $value);
+        }
+
         $stmt->execute();
 
         return (int) $stmt->fetchColumn();
@@ -280,11 +294,41 @@ class sinhvienModel
         return $stmt->execute($updateData);
     }
 
-    private function getSinhVienSelectSql()
+    private function buildSinhVienSearchWhere($filters)
+    {
+        $conditions = [];
+        $params = [];
+
+        $mssv = trim($filters['mssv'] ?? '');
+        $hoten = trim($filters['hoten'] ?? '');
+        $lop = trim($filters['lop'] ?? '');
+
+        if ($mssv !== '') {
+            $conditions[] = 'sv.mssv LIKE :mssv';
+            $params[':mssv'] = '%' . $mssv . '%';
+        }
+
+        if ($hoten !== '') {
+            $conditions[] = 'sv.hoten LIKE :hoten';
+            $params[':hoten'] = '%' . $hoten . '%';
+        }
+
+        if ($lop !== '') {
+            $conditions[] = '(sv.malop LIKE :lop OR lh.tenlop LIKE :lop)';
+            $params[':lop'] = '%' . $lop . '%';
+        }
+
+        return [
+            'where' => empty($conditions) ? '' : ' WHERE ' . implode(' AND ', $conditions),
+            'params' => $params,
+        ];
+    }
+
+    private function getSinhVienSelectSql($where = '')
     {
         return "SELECT sv.*, lh.tenlop
                 FROM " . $this->table . " sv
-                LEFT JOIN " . $this->classTable . " lh ON sv.malop = lh.malop
+                LEFT JOIN " . $this->classTable . " lh ON sv.malop = lh.malop" . $where . "
                 ORDER BY sv.mssv";
     }
 }

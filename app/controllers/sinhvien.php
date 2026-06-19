@@ -5,9 +5,14 @@ class sinhvien extends Controller
     {
         $sinhvienModel = $this->model('sinhvienModel');
         $limit = 5;
+        $filters = [
+            'mssv' => trim($_GET['mssv'] ?? ''),
+            'hoten' => trim($_GET['hoten'] ?? ''),
+            'lop' => trim($_GET['lop'] ?? ''),
+        ];
         $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
         $page = max($page, 1);
-        $totalSinhVien = $sinhvienModel->countSinhVien();
+        $totalSinhVien = $sinhvienModel->countSinhVien($filters);
         $totalPages = max((int) ceil($totalSinhVien / $limit), 1);
 
         if ($page > $totalPages) {
@@ -15,12 +20,13 @@ class sinhvien extends Controller
         }
 
         $offset = ($page - 1) * $limit;
-        $sinhviens = $sinhvienModel->paging($limit, $offset);
+        $sinhviens = $sinhvienModel->paging($limit, $offset, $filters);
 
         $this->view('sinhvien/index', [
             'sinhviens' => $sinhviens,
             'currentPage' => $page,
             'totalPages' => $totalPages,
+            'filters' => $filters,
             'primaryKey' => $sinhvienModel->getPrimaryKeyColumn(),
             'columns' => $sinhvienModel->getColumns(),
             'lopHocs' => $sinhvienModel->getLopHocList(),

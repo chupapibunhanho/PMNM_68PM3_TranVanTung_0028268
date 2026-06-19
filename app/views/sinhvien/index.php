@@ -3,6 +3,7 @@
 <?php $currentPage = $data['currentPage'] ?? 1; ?>
 <?php $columns = $data['columns'] ?? []; ?>
 <?php $lopHocs = $data['lopHocs'] ?? []; ?>
+<?php $filters = $data['filters'] ?? ['mssv' => '', 'hoten' => '', 'lop' => '']; ?>
 <?php $activePanel = ($_GET['panel'] ?? 'sinhvien') === 'lophoc' ? 'lophoc' : 'sinhvien'; ?>
 <?php
     $labels = [
@@ -56,6 +57,28 @@
         min-width: 0;
     }
 
+    .search-form {
+        max-width: none;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        align-items: end;
+        margin: 0 0 16px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        background: #fff;
+    }
+
+    .search-form .form-group {
+        margin-bottom: 0;
+    }
+
+    .search-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
     @media (max-width: 640px) {
         .dashboard-shell {
             grid-template-columns: 1fr;
@@ -70,6 +93,10 @@
 
         .control-panel a {
             margin-bottom: 0;
+        }
+
+        .search-form {
+            grid-template-columns: 1fr;
         }
     }
 </style>
@@ -255,6 +282,38 @@
         })();
     </script>
 <?php else: ?>
+    <form class="search-form" action="../sinhvien/index" method="get">
+        <input type="hidden" name="panel" value="sinhvien">
+        <div class="form-group">
+            <label for="search-mssv">MSSV</label>
+            <input
+                type="text"
+                id="search-mssv"
+                name="mssv"
+                value="<?php echo htmlspecialchars($filters['mssv'] ?? ''); ?>">
+        </div>
+        <div class="form-group">
+            <label for="search-hoten">Ho ten</label>
+            <input
+                type="text"
+                id="search-hoten"
+                name="hoten"
+                value="<?php echo htmlspecialchars($filters['hoten'] ?? ''); ?>">
+        </div>
+        <div class="form-group">
+            <label for="search-lop">Lop</label>
+            <input
+                type="text"
+                id="search-lop"
+                name="lop"
+                value="<?php echo htmlspecialchars($filters['lop'] ?? ''); ?>">
+        </div>
+        <div class="search-actions">
+            <button type="submit">Tim</button>
+            <a class="button secondary" href="../sinhvien/index?panel=sinhvien">Xoa loc</a>
+        </div>
+    </form>
+
     <div class="toolbar">
         <a class="button" href="../sinhvien/create">Them moi</a>
     </div>
@@ -297,21 +356,32 @@
 
     <?php
         $totalPages = $data['totalPages'] ?? 1;
+        $searchQuery = array_filter([
+            'panel' => 'sinhvien',
+            'mssv' => $filters['mssv'] ?? '',
+            'hoten' => $filters['hoten'] ?? '',
+            'lop' => $filters['lop'] ?? '',
+        ], function ($value) {
+            return $value !== '';
+        });
     ?>
     <?php if ($totalPages > 1): ?>
         <div class="pagination">
             <?php if ($currentPage > 1): ?>
-                <a href="../sinhvien/index?page=<?php echo $currentPage - 1; ?>">Truoc</a>
+                <?php $searchQuery['page'] = $currentPage - 1; ?>
+                <a href="../sinhvien/index?<?php echo htmlspecialchars(http_build_query($searchQuery)); ?>">Truoc</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a class="<?php echo $i === $currentPage ? 'active' : ''; ?>" href="../sinhvien/index?page=<?php echo $i; ?>">
+                <?php $searchQuery['page'] = $i; ?>
+                <a class="<?php echo $i === $currentPage ? 'active' : ''; ?>" href="../sinhvien/index?<?php echo htmlspecialchars(http_build_query($searchQuery)); ?>">
                     <?php echo $i; ?>
                 </a>
             <?php endfor; ?>
 
             <?php if ($currentPage < $totalPages): ?>
-                <a href="../sinhvien/index?page=<?php echo $currentPage + 1; ?>">Sau</a>
+                <?php $searchQuery['page'] = $currentPage + 1; ?>
+                <a href="../sinhvien/index?<?php echo htmlspecialchars(http_build_query($searchQuery)); ?>">Sau</a>
             <?php endif; ?>
         </div>
     <?php endif; ?>
