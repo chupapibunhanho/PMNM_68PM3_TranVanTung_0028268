@@ -23,42 +23,51 @@
 <style>
     .dashboard-shell {
         display: grid;
-        grid-template-columns: 100px minmax(0, 1fr);
-        gap: 18px;
+        grid-template-columns: 132px minmax(0, 1fr);
+        gap: 20px;
         align-items: start;
     }
 
     .control-panel {
-        width: 100px;
+        width: 132px;
         min-height: 240px;
-        padding: 8px;
-        border: 1px solid #ddd;
+        padding: 10px;
+        border: 1px solid #dbe3ef;
+        border-radius: 8px;
         background: #fff;
+        box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
     }
 
     .control-panel a {
         display: block;
         width: 100%;
-        padding: 10px 6px;
+        padding: 11px 8px;
         margin-bottom: 8px;
-        border: 1px solid #198754;
-        border-radius: 4px;
-        color: #198754;
-        background: #fff;
-        text-align: center;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        color: #475569;
+        background: transparent;
+        text-align: left;
         text-decoration: none;
-        font-size: 13px;
+        font-size: 14px;
+        font-weight: 700;
         line-height: 1.25;
     }
 
     .control-panel a.active,
     .control-panel a:hover {
-        color: #fff;
-        background: #198754;
+        color: #0f766e;
+        border-color: #ccfbf1;
+        background: #ecfdf5;
     }
 
     .dashboard-main {
         min-width: 0;
+        padding: 24px;
+        border: 1px solid #dbe3ef;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
     }
 
     .search-form {
@@ -67,10 +76,11 @@
         grid-template-columns: repeat(6, minmax(0, 1fr));
         gap: 10px;
         align-items: end;
-        margin: 0 0 16px;
-        padding: 12px;
-        border: 1px solid #ddd;
-        background: #fff;
+        margin: 0 0 18px;
+        padding: 14px;
+        border: 1px solid #dbe3ef;
+        border-radius: 8px;
+        background: #f8fafc;
     }
 
     .search-form .form-group {
@@ -82,6 +92,20 @@
         gap: 8px;
         align-items: center;
         grid-column: span 1;
+    }
+
+    .dashboard-main > h1 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #e5eaf2;
+    }
+
+    .toolbar {
+        justify-content: flex-end;
+        margin: 0 0 16px;
     }
 
     @media (max-width: 640px) {
@@ -98,10 +122,15 @@
 
         .control-panel a {
             margin-bottom: 0;
+            text-align: center;
         }
 
         .search-form {
             grid-template-columns: 1fr;
+        }
+
+        .dashboard-main {
+            padding: 16px;
         }
     }
 </style>

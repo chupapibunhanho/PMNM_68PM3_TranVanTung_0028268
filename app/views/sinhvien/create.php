@@ -1,5 +1,6 @@
 <?php $data['title'] = 'Them sinh vien'; ?>
 
+<div class="page-card">
 <h1>Them sinh vien</h1>
 
 <?php if (!empty($data['errors'])): ?>
@@ -52,3 +53,4 @@
         <a class="button secondary" href="../sinhvien/index">Quay lai</a>
     </div>
 </form>
+</div>
