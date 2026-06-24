@@ -131,116 +131,7 @@ class sinhvienModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function pagingLopHoc($limit = 5, $offset = 0, $filters = [])
-    {
-        if (!$this->conn) {
-            return [];
-        }
 
-        $whereData = $this->buildLopHocSearchWhere($filters);
-        $sql = "SELECT malop, tenlop, namhoc FROM " . $this->classTable . $whereData['where'] . " ORDER BY malop LIMIT :limit OFFSET :offset";
-        $stmt = $this->conn->prepare($sql);
-
-        foreach ($whereData['params'] as $param => $value) {
-            $stmt->bindValue($param, $value);
-        }
-
-        $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function countLopHoc($filters = [])
-    {
-        if (!$this->conn) {
-            return 0;
-        }
-
-        $whereData = $this->buildLopHocSearchWhere($filters);
-        $sql = "SELECT COUNT(*) FROM " . $this->classTable . $whereData['where'];
-        $stmt = $this->conn->prepare($sql);
-
-        foreach ($whereData['params'] as $param => $value) {
-            $stmt->bindValue($param, $value);
-        }
-
-        $stmt->execute();
-
-        return (int) $stmt->fetchColumn();
-    }
-
-    public function createLopHoc($data)
-    {
-        if (!$this->conn) {
-            return false;
-        }
-
-        $lopHocData = [
-            'malop' => trim($data['malop'] ?? ''),
-            'tenlop' => trim($data['tenlop'] ?? ''),
-            'namhoc' => trim($data['namhoc'] ?? ''),
-        ];
-
-        if ($lopHocData['malop'] === '' || $lopHocData['tenlop'] === '') {
-            return false;
-        }
-
-        $sql = "INSERT INTO " . $this->classTable . " (malop, tenlop, namhoc)
-                VALUES (:malop, :tenlop, :namhoc)";
-        $stmt = $this->conn->prepare($sql);
-
-        try {
-            return $stmt->execute($lopHocData);
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
-
-    public function updateLopHoc($id, $data)
-    {
-        if (!$this->conn || $id === '') {
-            return false;
-        }
-
-        $lopHocData = [
-            'tenlop' => trim($data['tenlop'] ?? ''),
-            'namhoc' => trim($data['namhoc'] ?? ''),
-            'id' => $id,
-        ];
-
-        if ($lopHocData['tenlop'] === '') {
-            return false;
-        }
-
-        $sql = "UPDATE " . $this->classTable . "
-                SET tenlop = :tenlop, namhoc = :namhoc
-                WHERE malop = :id";
-        $stmt = $this->conn->prepare($sql);
-
-        try {
-            return $stmt->execute($lopHocData);
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
-
-    public function deleteLopHoc($id)
-    {
-        if (!$this->conn || $id === '') {
-            return false;
-        }
-
-        $sql = "DELETE FROM " . $this->classTable . " WHERE malop = :id";
-        $stmt = $this->conn->prepare($sql);
-
-        try {
-            return $stmt->execute(['id' => $id]);
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
 
     public function createSinhVien($data)
     {
@@ -364,24 +255,6 @@ class sinhvienModel
         ];
     }
 
-    private function buildLopHocSearchWhere($filters)
-    {
-        $malop = trim($filters['malop'] ?? '');
-
-        if ($malop === '') {
-            return [
-                'where' => '',
-                'params' => [],
-            ];
-        }
-
-        return [
-            'where' => ' WHERE malop LIKE :malop',
-            'params' => [
-                ':malop' => '%' . $malop . '%',
-            ],
-        ];
-    }
 
     private function getSinhVienOrderBy($sort)
     {

@@ -18,6 +18,6 @@ class Controller
         require '../app/views/' . $view . '.php';
         $content = ob_get_clean();
 
-        require '../app/views/sinhvien/layout/materlayout.php';
+        require '../app/views/layout/materlayout.php';
     }
 }

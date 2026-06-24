@@ -3,13 +3,8 @@
 <?php $currentPage = $data['currentPage'] ?? 1; ?>
 <?php $columns = $data['columns'] ?? []; ?>
 <?php $lopHocs = $data['lopHocs'] ?? []; ?>
-<?php $lopHocRows = $data['lopHocRows'] ?? []; ?>
-<?php $currentLopHocPage = $data['currentLopHocPage'] ?? 1; ?>
-<?php $totalLopHocPages = $data['totalLopHocPages'] ?? 1; ?>
 <?php $filters = $data['filters'] ?? ['mssv' => '', 'hoten' => '', 'lop' => '']; ?>
-<?php $lopHocFilters = $data['lopHocFilters'] ?? ['malop' => '']; ?>
 <?php $sort = $data['sort'] ?? ['field' => 'mssv', 'direction' => 'asc']; ?>
-<?php $activePanel = ($_GET['panel'] ?? 'sinhvien') === 'lophoc' ? 'lophoc' : 'sinhvien'; ?>
 <?php
     $labels = [
         'mssv' => 'Ma sinh vien',
@@ -19,7 +14,7 @@
         'ngaysinh' => 'Ngay sinh',
     ];
 ?>
-<?php $data['title'] = $activePanel === 'lophoc' ? 'Danh sach lop hoc' : 'Danh sach sinh vien'; ?>
+<?php $data['title'] = 'Danh sach sinh vien'; ?>
 
 <style>
     .dashboard-shell {
@@ -138,240 +133,18 @@
 
 <div class="dashboard-shell">
     <aside class="control-panel">
-        <a class="<?php echo $activePanel === 'sinhvien' ? 'active' : ''; ?>" href="../sinhvien/index?panel=sinhvien">Sinh vien</a>
-        <a class="<?php echo $activePanel === 'lophoc' ? 'active' : ''; ?>" href="../sinhvien/index?panel=lophoc">Lop hoc</a>
+        <a class="active" href="../sinhvien/index">Sinh vien</a>
+        <a href="../lophoc/index">Lop hoc</a>
     </aside>
 
     <section class="dashboard-main">
-        <h1><?php echo $activePanel === 'lophoc' ? 'Danh sach lop hoc' : 'Danh sach sinh vien'; ?></h1>
+        <h1>Danh sach sinh vien</h1>
 
 <?php if (!empty($data['dbError'])): ?>
     <div class="notice"><?php echo htmlspecialchars($data['dbError']); ?></div>
 <?php endif; ?>
-<?php if (!empty($_GET['error'])): ?>
-    <?php
-        $errorMessages = [
-            'create_lophoc' => 'Khong the them lop hoc. Vui long kiem tra lai ma lop.',
-            'update_lophoc' => 'Khong the cap nhat lop hoc. Vui long kiem tra lai du lieu.',
-            'delete_lophoc' => 'Khong the xoa lop hoc. Lop nay co the dang co sinh vien.',
-        ];
-    ?>
-    <?php if (isset($errorMessages[$_GET['error']])): ?>
-        <div class="error"><?php echo htmlspecialchars($errorMessages[$_GET['error']]); ?></div>
-    <?php endif; ?>
-<?php endif; ?>
 
-<?php if ($activePanel === 'lophoc'): ?>
     <form class="search-form" action="../sinhvien/index" method="get">
-        <input type="hidden" name="panel" value="lophoc">
-        <div class="form-group">
-            <label for="search-lophoc-malop">Ma lop</label>
-            <input
-                type="text"
-                id="search-lophoc-malop"
-                name="lophoc_malop"
-                value="<?php echo htmlspecialchars($lopHocFilters['malop'] ?? ''); ?>">
-        </div>
-        <div class="search-actions">
-            <button type="submit">Tim</button>
-            <a class="button secondary" href="../sinhvien/index?panel=lophoc">Xoa loc</a>
-        </div>
-    </form>
-
-    <div class="toolbar">
-        <button class="button" type="button" id="openCreateLopHocModal">Them moi</button>
-    </div>
-
-    <?php if (!empty($lopHocRows)): ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>Ma lop</th>
-                    <th>Ten lop</th>
-                    <th>Nam hoc</th>
-                    <th>Thao tac</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($lopHocRows as $lopHoc): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($lopHoc['malop']); ?></td>
-                        <td>
-                            <a href="../sinhvien/index?panel=sinhvien&lop=<?php echo urlencode($lopHoc['malop']); ?>">
-                                <?php echo htmlspecialchars($lopHoc['tenlop']); ?>
-                            </a>
-                        </td>
-                        <td><?php echo htmlspecialchars($lopHoc['namhoc']); ?></td>
-                        <td class="action-cell">
-                            <button
-                                class="button secondary edit-lophoc-button"
-                                type="button"
-                                data-lophoc="<?php echo htmlspecialchars(json_encode($lopHoc), ENT_QUOTES, 'UTF-8'); ?>">
-                                Sua
-                            </button>
-                            <form class="delete-form" action="../sinhvien/deleteLopHoc" method="post" onsubmit="return confirm('Ban co chac muon xoa lop hoc nay?');">
-                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($lopHoc['malop']); ?>">
-                                <input type="hidden" name="lophoc_page" value="<?php echo htmlspecialchars($currentLopHocPage); ?>">
-                                <input type="hidden" name="lophoc_malop" value="<?php echo htmlspecialchars($lopHocFilters['malop'] ?? ''); ?>">
-                                <button class="button danger" type="submit">Xoa</button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-
-        <?php if ($totalLopHocPages > 1): ?>
-            <?php
-                $lopHocQuery = array_filter([
-                    'panel' => 'lophoc',
-                    'lophoc_malop' => $lopHocFilters['malop'] ?? '',
-                ], function ($value) {
-                    return $value !== '';
-                });
-            ?>
-            <div class="pagination">
-                <?php if ($currentLopHocPage > 1): ?>
-                    <?php $lopHocQuery['lophoc_page'] = $currentLopHocPage - 1; ?>
-                    <a href="../sinhvien/index?<?php echo htmlspecialchars(http_build_query($lopHocQuery)); ?>">Truoc</a>
-                <?php endif; ?>
-
-                <?php for ($i = 1; $i <= $totalLopHocPages; $i++): ?>
-                    <?php $lopHocQuery['lophoc_page'] = $i; ?>
-                    <a class="<?php echo $i === $currentLopHocPage ? 'active' : ''; ?>" href="../sinhvien/index?<?php echo htmlspecialchars(http_build_query($lopHocQuery)); ?>">
-                        <?php echo $i; ?>
-                    </a>
-                <?php endfor; ?>
-
-                <?php if ($currentLopHocPage < $totalLopHocPages): ?>
-                    <?php $lopHocQuery['lophoc_page'] = $currentLopHocPage + 1; ?>
-                    <a href="../sinhvien/index?<?php echo htmlspecialchars(http_build_query($lopHocQuery)); ?>">Sau</a>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
-    <?php else: ?>
-        <p>Chua co du lieu lop hoc.</p>
-    <?php endif; ?>
-
-    <div class="modal-backdrop" id="createLopHocModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h2>Them lop hoc</h2>
-                <button class="modal-close" type="button" id="closeCreateLopHocModal">x</button>
-            </div>
-
-            <form action="../sinhvien/createLopHoc" method="post">
-                <div class="form-group">
-                    <label for="create-malop">Ma lop</label>
-                    <input type="text" id="create-malop" name="malop" required>
-                </div>
-                <div class="form-group">
-                    <label for="create-tenlop">Ten lop</label>
-                    <input type="text" id="create-tenlop" name="tenlop" required>
-                </div>
-                <div class="form-group">
-                    <label for="create-namhoc">Nam hoc</label>
-                    <input type="text" id="create-namhoc" name="namhoc">
-                </div>
-
-                <div class="actions">
-                    <button type="submit">Them</button>
-                    <button class="button secondary" type="button" id="cancelCreateLopHocModal">Huy</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal-backdrop" id="editLopHocModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h2>Chinh sua lop hoc</h2>
-                <button class="modal-close" type="button" id="closeEditLopHocModal">x</button>
-            </div>
-
-            <form action="../sinhvien/updateLopHoc" method="post">
-                <input type="hidden" name="id" id="edit-lophoc-id">
-                <input type="hidden" name="lophoc_page" value="<?php echo htmlspecialchars($currentLopHocPage); ?>">
-                <input type="hidden" name="lophoc_malop" value="<?php echo htmlspecialchars($lopHocFilters['malop'] ?? ''); ?>">
-                <div class="form-group">
-                    <label for="edit-lophoc-malop">Ma lop</label>
-                    <input type="text" id="edit-lophoc-malop" data-lophoc-field="malop" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="edit-lophoc-tenlop">Ten lop</label>
-                    <input type="text" id="edit-lophoc-tenlop" name="tenlop" data-lophoc-field="tenlop" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-lophoc-namhoc">Nam hoc</label>
-                    <input type="text" id="edit-lophoc-namhoc" name="namhoc" data-lophoc-field="namhoc">
-                </div>
-
-                <div class="actions">
-                    <button type="submit">Luu</button>
-                    <button class="button secondary" type="button" id="cancelEditLopHocModal">Huy</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        (function () {
-            var createModal = document.getElementById('createLopHocModal');
-            var editModal = document.getElementById('editLopHocModal');
-            var openCreateButton = document.getElementById('openCreateLopHocModal');
-            var closeCreateButton = document.getElementById('closeCreateLopHocModal');
-            var cancelCreateButton = document.getElementById('cancelCreateLopHocModal');
-            var closeEditButton = document.getElementById('closeEditLopHocModal');
-            var cancelEditButton = document.getElementById('cancelEditLopHocModal');
-            var editId = document.getElementById('edit-lophoc-id');
-
-            function closeCreateModal() {
-                createModal.classList.remove('show');
-            }
-
-            function closeEditModal() {
-                editModal.classList.remove('show');
-            }
-
-            openCreateButton.addEventListener('click', function () {
-                createModal.classList.add('show');
-            });
-
-            closeCreateButton.addEventListener('click', closeCreateModal);
-            cancelCreateButton.addEventListener('click', closeCreateModal);
-            closeEditButton.addEventListener('click', closeEditModal);
-            cancelEditButton.addEventListener('click', closeEditModal);
-
-            document.querySelectorAll('.edit-lophoc-button').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var lopHoc = JSON.parse(button.getAttribute('data-lophoc'));
-                    editId.value = lopHoc.malop || '';
-
-                    editModal.querySelectorAll('[data-lophoc-field]').forEach(function (input) {
-                        var field = input.getAttribute('data-lophoc-field');
-                        input.value = lopHoc[field] || '';
-                    });
-
-                    editModal.classList.add('show');
-                });
-            });
-
-            createModal.addEventListener('click', function (event) {
-                if (event.target === createModal) {
-                    closeCreateModal();
-                }
-            });
-
-            editModal.addEventListener('click', function (event) {
-                if (event.target === editModal) {
-                    closeEditModal();
-                }
-            });
-        })();
-    </script>
-<?php else: ?>
-    <form class="search-form" action="../sinhvien/index" method="get">
-        <input type="hidden" name="panel" value="sinhvien">
         <div class="form-group">
             <label for="search-mssv">MSSV</label>
             <input
@@ -412,7 +185,7 @@
         </div>
         <div class="search-actions">
             <button type="submit">Tim</button>
-            <a class="button secondary" href="../sinhvien/index?panel=sinhvien">Xoa loc</a>
+            <a class="button secondary" href="../sinhvien/index">Xoa loc</a>
         </div>
     </form>
 
@@ -459,7 +232,6 @@
     <?php
         $totalPages = $data['totalPages'] ?? 1;
         $searchQuery = array_filter([
-            'panel' => 'sinhvien',
             'mssv' => $filters['mssv'] ?? '',
             'hoten' => $filters['hoten'] ?? '',
             'lop' => $filters['lop'] ?? '',
@@ -577,6 +349,6 @@
 <?php else: ?>
     <p>Chua co du lieu sinh vien.</p>
 <?php endif; ?>
-<?php endif; ?>
+
     </section>
 </div>
