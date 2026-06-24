@@ -1,8 +1,8 @@
-<?php $lophocs = $data['lophocs'] ?? []; ?>
+<?php $giaoviens = $data['giaoviens'] ?? []; ?>
 <?php $currentPage = $data['currentPage'] ?? 1; ?>
 <?php $totalPages = $data['totalPages'] ?? 1; ?>
-<?php $filters = $data['filters'] ?? ['malop' => '']; ?>
-<?php $data['title'] = 'Danh sach lop hoc'; ?>
+<?php $filters = $data['filters'] ?? ['mgv' => '', 'hoten' => '']; ?>
+<?php $data['title'] = 'Danh sach giao vien'; ?>
 
 <style>
     .dashboard-shell {
@@ -122,12 +122,12 @@
 <div class="dashboard-shell">
     <aside class="control-panel">
         <a href="../sinhvien/index">Sinh vien</a>
-        <a class="active" href="../lophoc/index">Lop hoc</a>
-        <a href="../giaovien/index">Giao vien</a>
+        <a href="../lophoc/index">Lop hoc</a>
+        <a class="active" href="../giaovien/index">Giao vien</a>
     </aside>
 
     <section class="dashboard-main">
-        <h1>Danh sach lop hoc</h1>
+        <h1>Danh sach giao vien</h1>
 
 <?php if (!empty($data['dbError'])): ?>
     <div class="notice"><?php echo htmlspecialchars($data['dbError']); ?></div>
@@ -135,9 +135,9 @@
 <?php if (!empty($_GET['error'])): ?>
     <?php
         $errorMessages = [
-            'create_lophoc' => 'Khong the them lop hoc. Vui long kiem tra lai ma lop.',
-            'update_lophoc' => 'Khong the cap nhat lop hoc. Vui long kiem tra lai du lieu.',
-            'delete_lophoc' => 'Khong the xoa lop hoc. Lop nay co the dang co sinh vien.',
+            'create_giaovien' => 'Khong the them giao vien. Vui long kiem tra lai ma.',
+            'update_giaovien' => 'Khong the cap nhat giao vien. Vui long kiem tra lai du lieu.',
+            'delete_giaovien' => 'Khong the xoa giao vien.',
         ];
     ?>
     <?php if (isset($errorMessages[$_GET['error']])): ?>
@@ -145,56 +145,61 @@
     <?php endif; ?>
 <?php endif; ?>
 
-    <form class="search-form" action="../lophoc/index" method="get">
+    <form class="search-form" action="../giaovien/index" method="get">
         <div class="form-group">
-            <label for="search-lophoc-malop">Ma lop</label>
+            <label for="search-mgv">Ma giang vien</label>
             <input
                 type="text"
-                id="search-lophoc-malop"
-                name="malop"
-                value="<?php echo htmlspecialchars($filters['malop'] ?? ''); ?>">
+                id="search-mgv"
+                name="mgv"
+                value="<?php echo htmlspecialchars($filters['mgv'] ?? ''); ?>">
+        </div>
+        <div class="form-group">
+            <label for="search-hoten">Ho ten</label>
+            <input
+                type="text"
+                id="search-hoten"
+                name="hoten"
+                value="<?php echo htmlspecialchars($filters['hoten'] ?? ''); ?>">
         </div>
         <div class="search-actions">
             <button type="submit">Tim</button>
-            <a class="button secondary" href="../lophoc/index">Xoa loc</a>
+            <a class="button secondary" href="../giaovien/index">Xoa loc</a>
         </div>
     </form>
 
     <div class="toolbar">
-        <a class="button" href="../lophoc/create">Them moi</a>
+        <a class="button" href="../giaovien/create">Them moi</a>
     </div>
 
-    <?php if (!empty($lophocs)): ?>
+    <?php if (!empty($giaoviens)): ?>
         <table>
             <thead>
                 <tr>
-                    <th>Ma lop</th>
-                    <th>Ten lop</th>
-                    <th>Nam hoc</th>
+                    <th>Ma GV</th>
+                    <th>Ho ten</th>
+                    <th>Ngay sinh</th>
                     <th>Thao tac</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($lophocs as $lopHoc): ?>
+                <?php foreach ($giaoviens as $gv): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($lopHoc['malop']); ?></td>
-                        <td>
-                            <a href="../sinhvien/index?lop=<?php echo urlencode($lopHoc['malop']); ?>">
-                                <?php echo htmlspecialchars($lopHoc['tenlop']); ?>
-                            </a>
-                        </td>
-                        <td><?php echo htmlspecialchars($lopHoc['namhoc']); ?></td>
+                        <td><?php echo htmlspecialchars($gv['mgv']); ?></td>
+                        <td><?php echo htmlspecialchars($gv['hoten']); ?></td>
+                        <td><?php echo htmlspecialchars($gv['ngaysinh']); ?></td>
                         <td class="action-cell">
                             <button
-                                class="button secondary edit-lophoc-button"
+                                class="button secondary edit-giaovien-button"
                                 type="button"
-                                data-lophoc="<?php echo htmlspecialchars(json_encode($lopHoc), ENT_QUOTES, 'UTF-8'); ?>">
+                                data-giaovien="<?php echo htmlspecialchars(json_encode($gv), ENT_QUOTES, 'UTF-8'); ?>">
                                 Sua
                             </button>
-                            <form class="delete-form" action="../lophoc/delete" method="post" onsubmit="return confirm('Ban co chac muon xoa lop hoc nay?');">
-                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($lopHoc['malop']); ?>">
+                            <form class="delete-form" action="../giaovien/delete" method="post" onsubmit="return confirm('Ban co chac muon xoa giao vien nay?');">
+                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($gv['mgv']); ?>">
                                 <input type="hidden" name="page" value="<?php echo htmlspecialchars($currentPage); ?>">
-                                <input type="hidden" name="search_malop" value="<?php echo htmlspecialchars($filters['malop'] ?? ''); ?>">
+                                <input type="hidden" name="search_mgv" value="<?php echo htmlspecialchars($filters['mgv'] ?? ''); ?>">
+                                <input type="hidden" name="search_hoten" value="<?php echo htmlspecialchars($filters['hoten'] ?? ''); ?>">
                                 <button class="button danger" type="submit">Xoa</button>
                             </form>
                         </td>
@@ -205,64 +210,64 @@
 
         <?php if ($totalPages > 1): ?>
             <?php
-                $lopHocQuery = array_filter([
-                    'malop' => $filters['malop'] ?? '',
+                $gvQuery = array_filter([
+                    'mgv' => $filters['mgv'] ?? '',
+                    'hoten' => $filters['hoten'] ?? '',
                 ], function ($value) {
                     return $value !== '';
                 });
             ?>
             <div class="pagination">
                 <?php if ($currentPage > 1): ?>
-                    <?php $lopHocQuery['page'] = $currentPage - 1; ?>
-                    <a href="../lophoc/index?<?php echo htmlspecialchars(http_build_query($lopHocQuery)); ?>">Truoc</a>
+                    <?php $gvQuery['page'] = $currentPage - 1; ?>
+                    <a href="../giaovien/index?<?php echo htmlspecialchars(http_build_query($gvQuery)); ?>">Truoc</a>
                 <?php endif; ?>
 
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                    <?php $lopHocQuery['page'] = $i; ?>
-                    <a class="<?php echo $i === $currentPage ? 'active' : ''; ?>" href="../lophoc/index?<?php echo htmlspecialchars(http_build_query($lopHocQuery)); ?>">
+                    <?php $gvQuery['page'] = $i; ?>
+                    <a class="<?php echo $i === $currentPage ? 'active' : ''; ?>" href="../giaovien/index?<?php echo htmlspecialchars(http_build_query($gvQuery)); ?>">
                         <?php echo $i; ?>
                     </a>
                 <?php endfor; ?>
 
                 <?php if ($currentPage < $totalPages): ?>
-                    <?php $lopHocQuery['page'] = $currentPage + 1; ?>
-                    <a href="../lophoc/index?<?php echo htmlspecialchars(http_build_query($lopHocQuery)); ?>">Sau</a>
+                    <?php $gvQuery['page'] = $currentPage + 1; ?>
+                    <a href="../giaovien/index?<?php echo htmlspecialchars(http_build_query($gvQuery)); ?>">Sau</a>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
     <?php else: ?>
-        <p>Chua co du lieu lop hoc.</p>
+        <p>Chua co du lieu giao vien.</p>
     <?php endif; ?>
 
-
-
-    <div class="modal-backdrop" id="editLopHocModal">
+    <div class="modal-backdrop" id="editGiaoVienModal">
         <div class="modal-box">
             <div class="modal-header">
-                <h2>Chinh sua lop hoc</h2>
-                <button class="modal-close" type="button" id="closeEditLopHocModal">x</button>
+                <h2>Chinh sua giao vien</h2>
+                <button class="modal-close" type="button" id="closeEditGiaoVienModal">x</button>
             </div>
 
-            <form action="../lophoc/update" method="post">
-                <input type="hidden" name="id" id="edit-lophoc-id">
+            <form action="../giaovien/update" method="post">
+                <input type="hidden" name="id" id="edit-giaovien-id">
                 <input type="hidden" name="page" value="<?php echo htmlspecialchars($currentPage); ?>">
-                <input type="hidden" name="search_malop" value="<?php echo htmlspecialchars($filters['malop'] ?? ''); ?>">
+                <input type="hidden" name="search_mgv" value="<?php echo htmlspecialchars($filters['mgv'] ?? ''); ?>">
+                <input type="hidden" name="search_hoten" value="<?php echo htmlspecialchars($filters['hoten'] ?? ''); ?>">
                 <div class="form-group">
-                    <label for="edit-lophoc-malop">Ma lop</label>
-                    <input type="text" id="edit-lophoc-malop" data-lophoc-field="malop" readonly>
+                    <label for="edit-giaovien-mgv">Ma GV</label>
+                    <input type="text" id="edit-giaovien-mgv" data-giaovien-field="mgv" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="edit-lophoc-tenlop">Ten lop</label>
-                    <input type="text" id="edit-lophoc-tenlop" name="tenlop" data-lophoc-field="tenlop" required>
+                    <label for="edit-giaovien-hoten">Ho ten</label>
+                    <input type="text" id="edit-giaovien-hoten" name="hoten" data-giaovien-field="hoten" required>
                 </div>
                 <div class="form-group">
-                    <label for="edit-lophoc-namhoc">Nam hoc</label>
-                    <input type="text" id="edit-lophoc-namhoc" name="namhoc" data-lophoc-field="namhoc">
+                    <label for="edit-giaovien-ngaysinh">Ngay sinh</label>
+                    <input type="date" id="edit-giaovien-ngaysinh" name="ngaysinh" data-giaovien-field="ngaysinh">
                 </div>
 
                 <div class="actions">
                     <button type="submit">Luu</button>
-                    <button class="button secondary" type="button" id="cancelEditLopHocModal">Huy</button>
+                    <button class="button secondary" type="button" id="cancelEditGiaoVienModal">Huy</button>
                 </div>
             </form>
         </div>
@@ -270,10 +275,10 @@
 
     <script>
         (function () {
-            var editModal = document.getElementById('editLopHocModal');
-            var closeEditButton = document.getElementById('closeEditLopHocModal');
-            var cancelEditButton = document.getElementById('cancelEditLopHocModal');
-            var editId = document.getElementById('edit-lophoc-id');
+            var editModal = document.getElementById('editGiaoVienModal');
+            var closeEditButton = document.getElementById('closeEditGiaoVienModal');
+            var cancelEditButton = document.getElementById('cancelEditGiaoVienModal');
+            var editId = document.getElementById('edit-giaovien-id');
 
             function closeEditModal() {
                 editModal.classList.remove('show');
@@ -282,14 +287,14 @@
             closeEditButton.addEventListener('click', closeEditModal);
             cancelEditButton.addEventListener('click', closeEditModal);
 
-            document.querySelectorAll('.edit-lophoc-button').forEach(function (button) {
+            document.querySelectorAll('.edit-giaovien-button').forEach(function (button) {
                 button.addEventListener('click', function () {
-                    var lopHoc = JSON.parse(button.getAttribute('data-lophoc'));
-                    editId.value = lopHoc.malop || '';
+                    var gv = JSON.parse(button.getAttribute('data-giaovien'));
+                    editId.value = gv.mgv || '';
 
-                    editModal.querySelectorAll('[data-lophoc-field]').forEach(function (input) {
-                        var field = input.getAttribute('data-lophoc-field');
-                        input.value = lopHoc[field] || '';
+                    editModal.querySelectorAll('[data-giaovien-field]').forEach(function (input) {
+                        var field = input.getAttribute('data-giaovien-field');
+                        input.value = gv[field] || '';
                     });
 
                     editModal.classList.add('show');

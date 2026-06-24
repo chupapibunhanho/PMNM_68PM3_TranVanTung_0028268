@@ -135,6 +135,7 @@
     <aside class="control-panel">
         <a class="active" href="../sinhvien/index">Sinh vien</a>
         <a href="../lophoc/index">Lop hoc</a>
+        <a href="../giaovien/index">Giao vien</a>
     </aside>
 
     <section class="dashboard-main">
